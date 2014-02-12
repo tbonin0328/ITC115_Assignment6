@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Applications/eclipse/plugins/org.eclipse.recommenders.doc_1.0.3.v20130211-0152-b208/media/figures/usr/acm.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
