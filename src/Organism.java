@@ -1,18 +1,30 @@
-import com.sun.tools.javac.code.Attribute.Array;
+import acm.util.RandomGenerator;
+
 
 public abstract class Organism
 {
 	protected World world;
 	protected int x;
 	protected int y;
+	protected int breedIncrement;
+	protected int timeAlive;
 	protected boolean simulated;
+	
+	protected static final int LEFT = 0;
+	protected static final int RIGHT = 1;
+	protected static final int ABOVE = 2;
+	protected static final int BELOW = 3;
+	
+	protected static int timeCounter = 0;
+	
+	
+	RandomGenerator rgen = RandomGenerator.getInstance();
 	
 	public Organism(World world, int x, int y)
 	{
 		this.world = world;
 		this.x = x;
 		this.y = y;
-		simulated = true;
 	}
 	
 	//returns the string representation of the organism
@@ -24,68 +36,77 @@ public abstract class Organism
 		if(simulated) return;
 		simulated = true;
 		
-		//now move, breed, ....
+		int dir = rgen.nextInt(0,3);
+		int newX = x, newY = y;
+        switch(dir)
+        {
+        case LEFT: newX--;
+        break;
+        case RIGHT: newX++;
+        break;
+        case ABOVE: newY--;
+        break;
+        case BELOW: newY++;
+        break;
+        }
 		
-		if(getType() == "ant" && 
-				detectAdjacentSpace() == true && 
-				getTimestep() % 3 != 0) 
-				moveIt();
-		
-		if(getType() == "ant" && 
-				detectAdjacentSpace() == true && 
-				getTimestep() % 3 == 0) 
-				breedIt();
-		
-		if(getType() == "doodlebug" && 
-				detectAdjacentSpace() == true && 
-				adjacentOrgType() != "ant" && 
-				getTimestep() % 8 != 0 &&
-				getAntsEaten() > 0)
-				moveIt();	
+	    if(world.pointInGrid(newX, newY) && world.getAt(newX, newY) == null)
+	    	{
+	    		move(newX,newY);
+	    	}
 
-		if(getType() == "doodlebug" && 
-				getTimestep() % 8 != 0 &&
-				getTimestep() % 3 == 0 &&
-				getAntsEaten() == 0)
-				starveIt();	
-		
-		if(getType() == "doodlebug" && 
-				detectAdjacentSpace() == true && 
-				adjacentOrgType() == "ant" && 
-				getTimestep() % 8 != 0 &&
-				getTimestep() % 3 != 0)
-				eatIt();	
-		
-		if(getType() == "doodlebug" && 
-				detectAdjacentSpace() == true && 
-				adjacentOrgType() == "ant" && 
-				getTimestep() % 8 != 0 &&
-				getTimestep() % 3 != 0)
-				breedIt();	
+    	//now move, breed, ....
+        timeCounter++;
+        timeAlive++;
+        breedIncrement++;
+        list(x, y);
 	}
 
+	protected abstract void move();
+	
+	public void move(int x, int y)
+	{
+		Organism bug = world.getAt(x, y);
+		if(bug == null)
+			{
+				world.setAt(this.x, this.y, null);
+				this.x = x;
+				this.y = y;
+				world.setAt(this.x, this.y, this);
+			}
+	}
+	
+	public void list(int a, int b)
+	{  
+        System.out.println("Place: " + Integer.toString(a) + ", " + Integer.toString(b) +
+        		"; Org: " + world.getAt(this.x, this.y) + 
+        		"; PIG?:" + world.pointInGrid(a,b) +  
+        		"; above: " + world.getAt(x-1, y) + 
+        		"; below: " + world.getAt(x+1, y) +
+        		"; right: " + world.getAt(x, y+1) + 
+        		"; left: " + world.getAt(x, y-1) +
+        		"; time alive: " + timeAlive +
+        		"; breedtime: " + breedIncrement
+        		);
+	}
+	
+	private void breed()
+	{
+		return;
+	}
+	
 	//indicate that the organism hasn't simulated this round
 	public void resetSimulation()
 	{
 		simulated = false;
 	}
 	
-	public abstract boolean detectAdjacentSpace();
+	protected void makeChild(int x, int y)
+	{
+		return;
+	}
 	
-	public abstract String adjacentOrgType();
-	
-	public abstract String getType();
-	
-	public abstract int getTimestep();
-	
-	public abstract void moveIt();
-	
-	public abstract void breedIt();
-	
-	public abstract void eatIt();
-	
-	public abstract int getAntsEaten();
-	
-	public abstract void starveIt();
+
 
 }
+

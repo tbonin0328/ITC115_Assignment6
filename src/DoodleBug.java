@@ -3,6 +3,8 @@ public class DoodleBug extends Organism
 	public DoodleBug(World world, int x, int y)
 	{
 		super(world, x, y);
+		timeAlive = 0;
+		breedIncrement = 0;
 	}
 	
 	//string representation of doodlebug
@@ -12,56 +14,58 @@ public class DoodleBug extends Organism
 	}
 
 	@Override
-	public boolean detectAdjacentSpace() {
-		// TODO Auto-generated method stub
-		return false;
+	public void move() 
+	{
+		move();
 	}
-
-	@Override
-	public String adjacentOrgType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int getTimestep() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void moveIt() {
-		// TODO Auto-generated method stub
+	
+	public void simulate()
+	{
+		//don't simulate twice in a round
+		if(simulated) return;
+		simulated = true;
 		
-	}
-
-	@Override
-	public void breedIt() {
-		// TODO Auto-generated method stub
+		int dir = rgen.nextInt(0,3);
+		int newX = x, newY = y;
+        switch(dir)
+        {
+        case LEFT: newX--;
+        break;
+        case RIGHT: newX++;
+        break;
+        case ABOVE: newY--;
+        break;
+        case BELOW: newY++;
+        break;
+        }
 		
+        if (!eat())
+        {
+	        if(world.pointInGrid(newX, newY) && world.getAt(newX, newY) == null)
+	    	{
+	    		move(newX,newY);
+	    	}
+        }
+        else
+        {
+        	world.setAt(newX, newY, null);
+        }
+
+    	//now move, breed, ....
+        timeCounter++;
+        timeAlive++;
+        breedIncrement++;
+        list(x, y);
+	}
+	
+	public boolean eat()
+	{
+		if (world.getAt(x-1, y) == null || world.getAt(x-1, y) == this) return false;
+		if (world.getAt(x+1, y) == null || world.getAt(x+1, y) == this) return false; 
+		if (world.getAt(x, y-1) == null || world.getAt(x, y-1) == this) return false;
+		if (world.getAt(x, y+1) == null || world.getAt(x, y+1) == this) return false;
+		return true;
 	}
 
-	@Override
-	public void eatIt() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public int getAntsEaten() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void starveIt() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }
