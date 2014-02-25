@@ -1,6 +1,5 @@
 import acm.util.RandomGenerator;
 
-
 public abstract class Organism
 {
 	protected World world;
@@ -74,7 +73,6 @@ public abstract class Organism
 		    	}
 
     	//now move, breed, ....
-		    this.timeAlive++;
 		    breedIncrement++;
 		    //list(x, y);
 			}
