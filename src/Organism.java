@@ -16,8 +16,6 @@ public abstract class Organism
 	protected int newX;
 	protected int newY;
 	protected boolean simulated;
-	protected Object[] buglist;
-	protected Object[] pointlist;
 	
 	protected static final int LEFT = 0;
 	protected static final int RIGHT = 1;
@@ -63,13 +61,9 @@ public abstract class Organism
 				breed();
 				breedCounter = 0;
 			}
-		else
-			{
-				move();
-				breedCounter++;
-			}
+		move();
+		breedCounter++;
 		timeAlive++;
-
 	}
 	
 	/**
@@ -108,30 +102,11 @@ public abstract class Organism
 		    if(checkSpace(newX, newY))
 		    	{
 		    	world.setAt(newX, newY, this);
-		    	list(x,y);
 		    	world.setAt(this.x, this.y, null);
 		    	this.x = newX;
 		    	this.y = newY;
 		    	}
 			}
-	}
-	
-	//get a list of various outputs on the console so I know if things are working or not
-	public void list(int a, int b)
-	{  
-        System.out.println("Place: " + Integer.toString(a) + ", " + Integer.toString(b) +
-        		"; Org: " + world.getAt(this.x, this.y) + 
-        		"; PIG?:" + world.pointInGrid(a,b) +  
-        		"; newX: " + newX +
-        		"; newY: " + newY +
-         		"; time alive: " + this.timeAlive +
-         		"; breedCounter: " + breedCounter +
-        		"; breedtime: " + breedIncrement +
-        		//"; notEat: " + this.eat() +
-        		"; adjPoints: " + listString(checkAdjacentPoints(this.x, this.y)) +
-        		"; adjBugs: " + listString(getAdjacentBugs(this.x, this.y))
-        		//"; getAnt?: " + (getAnt(getAdjacentBugs(this.x, this.y)))
-        		);
 	}
 	
 	/**
@@ -150,10 +125,6 @@ public abstract class Organism
 	 */
 	public abstract void makeChild(int x, int y);
 
-	
-	//if the space in question is occupied (not null), return false.
-	//if the space in question is not on the grid, return false.
-	//otherwise, return true and proceed
 	/**
 	 * @param x: the x coordinate of the space being checked.
 	 * @param y: the y coordinate of the space being checked.
@@ -174,7 +145,6 @@ public abstract class Organism
 	 */
 	public void breed()
 	{
-		//if ants timeAlive is 6 / 3 = 2, remainder == 0 then it will go through this is timeAlive = 3/1 = 3
 		if (checkSpace(x+1, y))
 		{
 			makeChild(x+1, y); 
@@ -192,63 +162,6 @@ public abstract class Organism
 			makeChild(x, y-1);
 		}
 	}
-
-	public Object[] checkAdjacentPoints(int x, int y)
-	{
-		Object[] pointlist = new Object[4];
-			pointlist[0] = world.pointInGrid(x-1, y);
-			pointlist[1] = world.pointInGrid(x+1, y);
-			pointlist[2] = world.pointInGrid(x, y+1);
-			pointlist[3] = world.pointInGrid(x, y-1);
-			return pointlist;
-			
-
-	}
-	
-	
-	public Object[] getAdjacentBugs(int x, int y)
-	{
-		buglist = new Object[4];
-			buglist[0] = world.getAt(x-1, y);
-			buglist[1] = world.getAt(x+1, y);
-			buglist[2] = world.getAt(x, y+1);
-			buglist[3] = world.getAt(x, y-1);
-		return buglist; 
-	}
-	
-	
-
-	public String listString (Object[][] items)
-	{
-		String listofwhatever = "";
-		
-		for (int i = 0; i < items.length; i++)
-		{
-			listofwhatever += items[i][i] + ", ";
-		}
-		return listofwhatever;
-	}
-	
-	public String listString (Object[] items)
-	{
-		String listofwhatever = "";
-		
-		for (int i = 0; i < items.length; i++)
-		{
-			listofwhatever += items[i] + ", ";
-		}
-		return listofwhatever;
-	}
-	
-	
-	public Object get(Object[] items, int index)
-	{
-		//if they try to access an index beyond where data is
-		return items[index];
-	}
-	
-	//if it's an ant, get timestep % 3
-	//if it's a doodlebug, get timestep % 8
 }
 
 

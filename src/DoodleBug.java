@@ -4,9 +4,7 @@
  * Submitted 2/28/14
  */
 public class DoodleBug extends Organism
-{
-	private Object[] buglist;
-	
+{	
 	private int timeSinceEat = 0;
 	
 	/**
@@ -43,18 +41,15 @@ public class DoodleBug extends Organism
 		if(simulated) return;
 		simulated = true;
 		
+		if (breedCounter == breedIncrement)
+		{
+			breed();
+			breedCounter = 0;
+		}
 		if (timeSinceEat != 3 && !eat())
 		{
-			if (breedCounter == breedIncrement)
-			{
-				breed();
-				breedCounter = 0;
-			}
-			else
-			{
-				move();
-				breedCounter++;
-			}
+			move();
+			breedCounter++;
 		}
 		eat();
 		starve();
@@ -69,7 +64,6 @@ public class DoodleBug extends Organism
 		if (timeSinceEat == 3)
 		{
 			world.setAt(x, y, null);
-			System.out.println("starved " + Integer.toString(x) + ", " + Integer.toString(y));
 		}
 	}
 
@@ -106,24 +100,6 @@ public class DoodleBug extends Organism
 			return false;
 		}
 	}
-	
-	public void list(int a, int b)
-	{  
-        System.out.println("Place: " + Integer.toString(a) + ", " + Integer.toString(b) +
-        		"; Org: " + world.getAt(this.x, this.y) + 
-        		//"; PIG?:" + world.pointInGrid(a,b) +  
-        		"; newX: " + newX +
-        		"; newY: " + newY +
-         		"; time alive: " + this.timeAlive +
-         		"; breedCounter: " + breedCounter +
-        		"; breedtime: " + breedIncrement +
-        		"; timeSinceEat: " + timeSinceEat +
-        		//"; adjPoints: " + listString(checkAdjacentPoints(this.x, this.y)) +
-        		"; adjBugs: " + listString(getAdjacentBugs(this.x, this.y))
-        		//"; AdjacentAnts" + AdjacentAnts(x, y)
-        		//"; getAnt?: " + (getAnt(getAdjacentBugs(this.x, this.y)))
-        		);
-	}
 
 	/* (non-Javadoc)
 	 * @see Organism#makeChild(int, int)
@@ -132,7 +108,6 @@ public class DoodleBug extends Organism
 	@Override
 	public void makeChild(int childX, int childY) 
 	{
-		System.out.println("new " + world.getAt(this.x, this.y) + " at " + Integer.toString(x+1) + ", " + Integer.toString(y));
 		Organism bug = new DoodleBug(world, childX, childY);
 		world.setAt(childX, childY, bug);
 		bug.x = childX;
@@ -162,7 +137,6 @@ public class DoodleBug extends Organism
 	 */
 	public void replaceAnt(int antX, int antY)
 	{
-		System.out.println("ant eaten at " + Integer.toString(antX) + ", " + Integer.toString(antY));
 		world.setAt(antX, antY, null);
 		world.setAt(antX, antY, this);
 		world.setAt(x, y, null);
@@ -170,19 +144,5 @@ public class DoodleBug extends Organism
 		this.y = antY;
 		timeSinceEat = 0;
 	}
-	
-	/**
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public Object AdjacentAnts (int x, int y)
-	{
-		Object[]antlist = new Object[4];
-		antlist[0] = world.getAt(x+1, y);
-		antlist[1] = world.getAt(x+1, y);
-		antlist[2] = world.getAt(x, y+1);
-		antlist[3] = world.getAt(x, y-1);
-		return antlist;
-	}
+
 }
