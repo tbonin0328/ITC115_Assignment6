@@ -5,8 +5,9 @@ public abstract class Organism
 	protected World world;
 	protected int x;
 	protected int y;
-	protected int breedIncrement = 0;
-	protected int timeAlive;
+	protected int breedIncrement = 3;
+	protected int breedCounter = 0;
+	protected int timeAlive = 0;
 	protected int newX;
 	protected int newY;
 	protected boolean simulated;
@@ -17,9 +18,6 @@ public abstract class Organism
 	protected static final int RIGHT = 1;
 	protected static final int ABOVE = 2;
 	protected static final int BELOW = 3;
-	
-	protected int[][] bugsNear = new int[][]{{x-1,y},{x+1,y},{x,y-1},{x,y+1}};
-	
 	
 	RandomGenerator rgen = RandomGenerator.getInstance();
 	
@@ -40,10 +38,18 @@ public abstract class Organism
 		if(simulated) return;
 		simulated = true;
 		
-		move();
-		breed();
+		if (breedCounter == breedIncrement)
+			{
+				breed();
+				breedCounter = 0;
+			}
+		else
+			{
+				move();
+				breedCounter++;
+			}
 		timeAlive++;
-		list(x,y);
+
 	}
 
 	//move the organism by: 
@@ -80,10 +86,11 @@ public abstract class Organism
 	        break;
 	        }
 			
-		    if(world.pointInGrid(newX, newY) && world.getAt(newX, newY) == null)
+		    if(checkSpace(newX, newY))
 		    	{
-		    	world.setAt(newX, newY, this);   
-		    	world.setAt(this.x, this.y, null); 
+		    	world.setAt(newX, newY, this);
+		    	list(x,y);
+		    	world.setAt(this.x, this.y, null);
 		    	this.x = newX;
 		    	this.y = newY;
 		    	}
@@ -99,6 +106,7 @@ public abstract class Organism
         		"; newX: " + newX +
         		"; newY: " + newY +
          		"; time alive: " + this.timeAlive +
+         		"; breedCounter: " + breedCounter +
         		"; breedtime: " + breedIncrement +
         		//"; notEat: " + this.eat() +
         		"; adjPoints: " + listString(checkAdjacentPoints(this.x, this.y)) +
@@ -118,7 +126,7 @@ public abstract class Organism
 		simulated = false;
 	}
 	
-	public abstract Organism makeChild();
+	public abstract void makeChild(int x, int y);
 
 	
 	//if the space in question is occupied (not null), return false.
@@ -127,35 +135,29 @@ public abstract class Organism
 	public boolean checkSpace (int x, int y)
 	{
 		if (world.getAt(x, y) != null) return false;
-		if (world.pointInGrid(x, y) != true) return false;
+		if (!world.pointInGrid(x, y)) return false;
 		return true;
 	}
 	
 	public void breed()
 	{
-		if (!breedTime()) return;
-		
-		if (checkSpace(this.x+1, this.y))
+		//if ants timeAlive is 6 / 3 = 2, remainder == 0 then it will go through this is timeAlive = 3/1 = 3
+		if (checkSpace(x+1, y))
 		{
-			world.setAt(this.x+1, this.y, this);
+			makeChild(x+1, y); 
 		}
-		else if (checkSpace(this.x-1, this.y))
+		else if (checkSpace(x-1, y))
 		{
-			world.setAt(this.x-1, this.y, this);
+			makeChild(x-1,y);
 		}
-		else if (checkSpace(this.x, this.y+1))
+		else if (checkSpace(x, y+1))
 		{
-			world.setAt(this.x, this.y+1, this);
+			makeChild(x, y+1);
 		}
-		else if (checkSpace(this.x, this.y-1))
+		else if (checkSpace(x, y-1))
 		{
-			world.setAt(this.x, this.y-1, this);
+			makeChild(x, y-1);
 		}
-	}
-	
-	public boolean breedTime()
-	{
-		return timeAlive % breedIncrement == 0;
 	}
 
 	public Object[] checkAdjacentPoints(int x, int y)
@@ -175,7 +177,7 @@ public abstract class Organism
 			buglist[1] = world.getAt(x+1, y);
 			buglist[2] = world.getAt(x, y+1);
 			buglist[3] = world.getAt(x, y-1);
-		return buglist;
+		return buglist; 
 	}
 
 	public String listString (Object[][] items)
@@ -209,11 +211,6 @@ public abstract class Organism
 	
 	//if it's an ant, get timestep % 3
 	//if it's a doodlebug, get timestep % 8
-
-	public Organism makeChild(int childX, int childY) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
 
 

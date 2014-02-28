@@ -4,7 +4,6 @@ public class Ant extends Organism
 	public Ant(World world, int x, int y)
 	{
 		super(world, x, y);
-		breedIncrement = 3;
 		
 	}
 	
@@ -22,20 +21,23 @@ public class Ant extends Organism
         		"; newX: " + newX +
         		"; newY: " + newY +
          		"; time alive: " + this.timeAlive +
+         		"; breedCounter: " + breedCounter +
         		"; breedtime: " + breedIncrement
+        		//"; notEat: " + this.eat() +
+        		//"; adjPoints: " + listString(checkAdjacentPoints(this.x, this.y)) +
+        		//"; adjBugs: " + listString(getAdjacentBugs(this.x, this.y))
+        		//"; getAnt?: " + (getAnt(getAdjacentBugs(this.x, this.y)))
         		);
 	}
 
 	@Override
-	public Organism makeChild(int childX, int childY) 
+	public void makeChild(int childX, int childY) 
 	{
-		return new Ant(world, childY, childY);
-	}
-
-	@Override
-	public Organism makeChild() {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("new " + world.getAt(this.x, this.y) + " at " + Integer.toString(x+1) + ", " + Integer.toString(y));
+		Organism ant = new Ant (world, childX, childY);
+		world.setAt(childX, childY, ant);
+		ant.x = childX;
+		ant.y = childY;
 	}
 }
 

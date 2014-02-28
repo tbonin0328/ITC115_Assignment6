@@ -18,30 +18,50 @@ public class DoodleBug extends Organism
 	
 	public void simulate()
 	{
-		if(simulated) return;
-		simulated = true;
-		
 		if (!eat())
 		{
-			move();
-			breed();	
-			starve();
+			super.simulate();
 		}
-        
-    	timeSinceEat++;
+		eat();
+		starve();
 	}
 	
 	private void starve() 
 	{
-		if (timeSinceEat <= 3)
+		if (timeSinceEat == 3)
 		{
-			world.setAt(this.x, this.y, null);
+			world.setAt(x, y, null);
+			System.out.println("starved " + Integer.toString(x) + ", " + Integer.toString(y));
+		}
+		else
+		{
+			timeSinceEat++;
 		}
 	}
 
 	public boolean eat()
 	{
-		return simulated;
+		if (checkAnt(x+1,y))
+		{
+			replaceAnt(x+1,y);
+			return true;
+		}
+		else if (checkAnt(x-1,y))
+		{
+			replaceAnt(x-1, y);
+			return true;
+		}
+		else if (checkAnt(x, y+1))
+		{
+			replaceAnt(x, y+1);
+			return true;
+		}
+		else if (checkAnt(x, y-1))
+		{
+			replaceAnt(x, y-1);
+			return true;
+		}
+			return false;
 	}
 	
 	public void list(int a, int b)
@@ -52,32 +72,40 @@ public class DoodleBug extends Organism
         		"; newX: " + newX +
         		"; newY: " + newY +
          		"; time alive: " + this.timeAlive +
+         		"; breedCounter: " + breedCounter +
         		"; breedtime: " + breedIncrement +
-        		"; notEat: " + this.eat() +
-        		"; adjPoints: " + listString(checkAdjacentPoints(this.x, this.y)) +
-        		"; adjBugs: " + listString(getAdjacentBugs(this.x, this.y))
+        		"; timeSinceEat: " + timeSinceEat
+        		//"; adjPoints: " + listString(checkAdjacentPoints(this.x, this.y)) +
+        		//"; adjBugs: " + listString(getAdjacentBugs(this.x, this.y))
         		//"; getAnt?: " + (getAnt(getAdjacentBugs(this.x, this.y)))
         		);
 	}
-	
-	public boolean remove(int index)
-	{
-		world.setAt(this.x, this.y, null);
-		return simulated;
-	}
 
 	@Override
-	public DoodleBug makeChild(int childX, int childY) 
+	public void makeChild(int childX, int childY) 
 	{
-		return new DoodleBug(world, childY, childY);
-	}
-
-	@Override
-	public Organism makeChild() {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("new " + world.getAt(this.x, this.y) + " at " + Integer.toString(x+1) + ", " + Integer.toString(y));
+		Organism bug = new DoodleBug(world, childX, childY);
+		world.setAt(childX, childY, bug);
+		bug.x = childX;
+		bug.y = childY;
 	}
 	
+	public boolean checkAnt(int x, int y)
+	{
+		Organism org = world.getAt(x, y);
+		if (world.pointInGrid(x, y) && org != null && org.toString() == "ant") return true;
+		return false;
+	}
 
-
+	public void replaceAnt(int antX, int antY)
+	{
+		System.out.println("ant eaten at " + Integer.toString(antX) + ", " + Integer.toString(antY));
+		world.setAt(antX, antY, null);
+		world.setAt(antX, antY, this);
+		world.setAt(x, y, null);
+		this.x = antX;
+		this.y = antY;
+		timeSinceEat = 0;
+	}
 }
