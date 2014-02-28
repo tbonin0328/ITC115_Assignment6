@@ -1,5 +1,10 @@
 import acm.util.RandomGenerator;
 
+/**
+ * @author thomasbonin
+ * ITC 115, Assignment 6, Bug Simulation
+ * Submitted 2/28/14
+ */
 public abstract class Organism
 {
 	protected World world;
@@ -21,6 +26,12 @@ public abstract class Organism
 	
 	RandomGenerator rgen = RandomGenerator.getInstance();
 	
+	/**
+	 * @param world: brings in the world object
+	 * @param x: the x coordinate (from the row/column structure) of the organism
+	 * @param y: the y coordinate (from the row/column structure) of the organism
+	 * This is the constructor for the Organism.
+	 */
 	public Organism(World world, int x, int y)
 	{
 		this.world = world;
@@ -28,10 +39,19 @@ public abstract class Organism
 		this.y = y;
 	}
 	
-	//returns the string representation of the organism
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 * This method returns the string representation of the organism and 
+	 * can be modified at the subclass level.
+	 */
 	public abstract String toString();
 	
-	//simulate the bug, move the bug, increase the timeAlive incrementer, increase the breed incrementer
+	/**
+	 * This method simulates the bug. If it's time to breed, the organism breeds and the
+	 * breeding counter is reset. If not time to breed, the organism moves.
+	 * Either way, the time alive counter is increased. 
+	 */
 	public void simulate()
 	{
 		//don't simulate twice in a round
@@ -51,20 +71,19 @@ public abstract class Organism
 		timeAlive++;
 
 	}
-
-	//move the organism by: 
-	//1) verifying that the row/col does not contain null; 
-	//2) using a random number generator to get a random direction between 1 and 4; 
-	//3) recording the x and y value of the location as newX and newY;
-	//4) putting the random direction into a switch statement that increases
-	// the newX or newY, depending on the number;
-	//5) using an if/else statement to check if the new point is in the grid
-	//and is null, and, if it is,
-	//6) setting the organism at the new x,y, and
-	//7) setting the current x,y position to null
-	//8) if the if statement is false, using else to keep the organism where it 
-	//is [WILL THIS CAUSE ANOTHER BUG NOT TO GO THERE?]
 	
+	/**
+	 * 	This method moves the organism by: 
+	 * 1) verifying that the row/col does not contain null; 
+	 * 2) using a random number generator to get a random direction between 0 and 3; 
+	 * 3) recording the x and y value of the location as newX and newY;
+	 * 4) putting the random direction into a switch statement that increases
+	 * the newX or newY, depending on the number;
+	 * 5) using an if/else statement to check if the new point is in the grid
+	 * and is null, and, if it is,
+	 * 6) setting the organism at the new x,y, and
+	 * 7) setting the current x,y position to null
+	 */
 	public void move()
 	{	
 		if (world.getAt(this.x, this.y) != null)
@@ -115,23 +134,32 @@ public abstract class Organism
         		);
 	}
 	
-	//1) get the breed modulus for the organism in question
-	//2) if organism timestep % getModulus equals 0, 
-	//create an additional organism of same type in 
-	//empty space that is free.
-	
-	//indicate that the organism hasn't simulated this round
+	/**
+	 * This method indicates that the organism hasn't simulated this round.
+	 */
 	public void resetSimulation()
 	{
 		simulated = false;
 	}
 	
+	/**
+	 * @param x: grid x coordinate of where the new child will be placed.
+	 * @param y: grid y coordinate of where the new child will be placed.
+	 * This method is the abstract core method for the makeChild methods in 
+	 * the subclasses.
+	 */
 	public abstract void makeChild(int x, int y);
 
 	
 	//if the space in question is occupied (not null), return false.
 	//if the space in question is not on the grid, return false.
 	//otherwise, return true and proceed
+	/**
+	 * @param x: the x coordinate of the space being checked.
+	 * @param y: the y coordinate of the space being checked.
+	 * @return: returns true if the space is not null and is in the grid.
+	 * This method checks to see whether a space can be moved into or not.
+	 */
 	public boolean checkSpace (int x, int y)
 	{
 		if (world.getAt(x, y) != null) return false;
@@ -139,6 +167,11 @@ public abstract class Organism
 		return true;
 	}
 	
+	/**
+	 * This method uses an if/else statement to check each space around the organism
+	 * in question. If the space is free, then the organism places a new organism there
+	 * and exits.
+	 */
 	public void breed()
 	{
 		//if ants timeAlive is 6 / 3 = 2, remainder == 0 then it will go through this is timeAlive = 3/1 = 3
@@ -168,7 +201,10 @@ public abstract class Organism
 			pointlist[2] = world.pointInGrid(x, y+1);
 			pointlist[3] = world.pointInGrid(x, y-1);
 			return pointlist;
+			
+
 	}
+	
 	
 	public Object[] getAdjacentBugs(int x, int y)
 	{
@@ -179,6 +215,8 @@ public abstract class Organism
 			buglist[3] = world.getAt(x, y-1);
 		return buglist; 
 	}
+	
+	
 
 	public String listString (Object[][] items)
 	{
